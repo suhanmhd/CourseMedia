@@ -2,6 +2,7 @@ package com.course.CourseMedia.auth.controller
 
 import com.course.CourseMedia.auth.dto.AuthRequest
 import com.course.CourseMedia.auth.dto.AuthResponse
+import com.course.CourseMedia.auth.dto.RefreshTokenRequest
 import com.course.CourseMedia.auth.dto.RegisterRequest
 import com.course.CourseMedia.auth.service.AuthService
 
@@ -15,7 +16,7 @@ class AuthController(private val authService: AuthService) {
 
     @PostMapping("/register")
     fun register(@Valid @RequestBody request: RegisterRequest): ResponseEntity<AuthResponse> {
-        println("helllooo")
+
         return ResponseEntity.ok(authService.register(request))
     }
 
@@ -24,4 +25,10 @@ class AuthController(private val authService: AuthService) {
         val response = authService.authenticate(request)
         return ResponseEntity.ok(response)
     }
+    @PostMapping("/refresh-token")
+    fun refreshToken(@RequestBody request: RefreshTokenRequest): ResponseEntity<AuthResponse> {
+        val response = authService.refreshToken(request)
+        return ResponseEntity.ok(response)
+    }
+
 }

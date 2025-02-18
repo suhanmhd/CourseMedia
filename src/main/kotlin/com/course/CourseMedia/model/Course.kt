@@ -14,13 +14,13 @@ data class Course(
     val id: Long = 0,
 
     @Column(nullable = false)
-    val title: String,
+    var title: String,
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    val description: String,
+    var description: String,
 
     @Column(nullable = false)
-    val price: BigDecimal,
+    var price: BigDecimal,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", nullable = false)

@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface CourseRepository : JpaRepository<Course, Long> {
     fun findByCreator(creator: User): List<Course>
+    fun findByTitleContainingIgnoreCase(title: String): List<Course>
 }
+

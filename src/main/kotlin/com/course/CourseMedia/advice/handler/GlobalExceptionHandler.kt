@@ -89,6 +89,13 @@ class GlobalExceptionHandler {
         return buildProblemDetail(HttpStatus.SERVICE_UNAVAILABLE, "Database operation failed", request)
     }
 
+    @ExceptionHandler(ConflictException::class)
+    fun handleConflictException(ex: DatabaseException, request: HttpServletRequest): ProblemDetail {
+        log.error("Database error: ${ex.message}", ex)
+        return buildProblemDetail(HttpStatus.CONFLICT, ex.message, request)
+    }
+
+
     // Global fallback for unhandled exceptions
     @ExceptionHandler(Exception::class)
     fun handleGenericException(ex: Exception, request: HttpServletRequest): ProblemDetail {

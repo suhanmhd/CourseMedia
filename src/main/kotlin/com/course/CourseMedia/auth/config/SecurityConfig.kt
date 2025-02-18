@@ -73,8 +73,10 @@ class SecurityConfig(
         http
             .csrf { it.disable() }
             .authorizeHttpRequests {
-                it.requestMatchers("/api/auth/**").permitAll()
-//                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                it.requestMatchers("/api/auth/**"," /api/courses/habibi").permitAll()
+
+
+                  .requestMatchers("/api/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated()
             }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
