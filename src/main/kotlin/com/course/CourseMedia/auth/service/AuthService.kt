@@ -1,5 +1,7 @@
 package  com.course.CourseMedia.auth.service
 
+import com.course.CourseMedia.advice.exceptions.EmailAlreadyExistsException
+import com.course.CourseMedia.advice.exceptions.ResourceNotFoundException
 import com.course.CourseMedia.auth.dto.AuthRequest
 import com.course.CourseMedia.auth.dto.AuthResponse
 import com.course.CourseMedia.auth.dto.RefreshTokenRequest
@@ -24,13 +26,13 @@ class AuthService(
 
     fun register(request: RegisterRequest): AuthResponse {
         if (userRepository.findByEmail(request.email).isPresent) {
-            throw IllegalArgumentException("Email is already taken!")
+            throw EmailAlreadyExistsException("Email is already taken!")
         }
 
         val role = try {
             Role.valueOf(request.role.toString()) // No need to call uppercase, as 'role' is already a valid enum name
-        } catch (e: IllegalArgumentException) {
-            throw IllegalArgumentException("Invalid role: Must be ADMIN, CREATOR, or CUSTOMER")
+        } catch (e: ResourceNotFoundException) {
+            throw ResourceNotFoundException("Invalid role: Must be ADMIN, CREATOR, or CUSTOMER")
         }
 
         val user = User(
