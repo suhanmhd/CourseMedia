@@ -163,6 +163,7 @@
 				</dependencies>
 			</plugin>
 		</plugins>
+		<finalName>course-media</finalName>
 	</build>
 
 </project>
