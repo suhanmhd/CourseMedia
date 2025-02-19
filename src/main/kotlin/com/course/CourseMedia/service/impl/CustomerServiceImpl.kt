@@ -56,7 +56,7 @@ import org.springframework.stereotype.Service
 
     override fun buyCourse(customerEmail: String, courseId: Long): PurchaseResponseDTO {
         val customer = userRepository.findByEmail(customerEmail)
-            ?: throw UserNotFoundException("User with email $customerEmail not found")
+            .orElseThrow { UserNotFoundException("User with email $customerEmail not found") }
 
         val course = courseRepository.findById(courseId)
             .orElseThrow { ResourceNotFoundException("Course not found with id $courseId") }
@@ -66,7 +66,7 @@ import org.springframework.stereotype.Service
         }
 
         val purchase = purchaseRepository.save(Purchase(customer = customer, course = course))
-        logger.info { "User ${customer.get().email} purchased course ${course.title}" }
+        logger.info { "User ${customer.email} purchased course ${course.title}" }
 
         return purchase.toDTO()
     }

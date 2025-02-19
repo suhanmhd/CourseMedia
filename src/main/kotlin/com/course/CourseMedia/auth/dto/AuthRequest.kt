@@ -10,6 +10,11 @@ data class AuthRequest(
     @field:Email(message = "Invalid email format")
     val email: String,
 
+
+//    @field:NotBlank(message = "Name cannot be empty")
+//
+//    val name: String,
+
     @field:NotBlank(message = "Password cannot be empty")
     @field:Size(min = 6, message = "Password must be at least 6 characters")
     val password: String
