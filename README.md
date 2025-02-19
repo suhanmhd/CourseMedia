@@ -62,13 +62,8 @@ CourseMedia is designed to facilitate online learning by enabling course creator
    ```
 
 2. **Configure the database**
-   Modify `src/main/resources/application.properties` to configure the database:
-   ```properties
-   spring.datasource.url=jdbc:h2:mem:coursemedia_db
-   spring.datasource.driverClassName=org.h2.Driver
-   spring.datasource.username=
-   spring.datasource.password=
-   spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+   Modify `src/main/resources/application.yml` to configure the database:
+
    ```
 
 3. **Build the project**
@@ -86,7 +81,44 @@ CourseMedia is designed to facilitate online learning by enabling course creator
    docker build -t course-media .
    docker run -p 9090:9090 course-media
    ```
+## Database Schema
 
+### **Users Table**
+```sql
+CREATE TABLE users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role ENUM('CREATOR', 'CUSTOMER', 'ADMIN') NOT NULL
+);
+```
+
+### **Courses Table**
+```sql
+CREATE TABLE courses (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    creator_id BIGINT NOT NULL,
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
+);
+```
+
+### **Purchases Table**
+```sql
+CREATE TABLE purchases (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    course_id BIGINT NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    purchase_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    status ENUM('COMPLETED', 'REFUNDED', 'CANCELED') NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
+);
+```
 
 ## API Endpoints
 For detailed API documentation, please refer to the Swagger documentation linked below.
