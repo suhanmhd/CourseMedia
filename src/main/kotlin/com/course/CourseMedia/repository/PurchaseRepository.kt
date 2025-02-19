@@ -23,4 +23,18 @@ interface PurchaseRepository : JpaRepository<Purchase, Long> {
         @Param("startDate") startDate: LocalDateTime?,
         @Param("endDate") endDate: LocalDateTime?
     ): List<Purchase>
+
+
+    @Query("""
+    SELECT p FROM Purchase p 
+    WHERE p.course.creator.email = :creatorEmail 
+    AND (:startDate IS NULL OR p.purchaseDate >= :startDate) 
+    AND (:endDate IS NULL OR p.purchaseDate <= :endDate)
+""")
+    fun findByCreatorEmailAndDateRange(
+        @Param("creatorEmail") creatorEmail: String,
+        @Param("startDate") startDate: LocalDateTime?,
+        @Param("endDate") endDate: LocalDateTime?
+    ): List<Purchase>
+
 }

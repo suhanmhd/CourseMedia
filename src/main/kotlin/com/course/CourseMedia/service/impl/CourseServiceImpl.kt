@@ -7,19 +7,25 @@ import com.course.CourseMedia.auth.enum.Role
 import com.course.CourseMedia.auth.repository.UserRepository
 import com.course.CourseMedia.dto.CourseRequestDTO
 import com.course.CourseMedia.dto.CourseResponseDTO
+import com.course.CourseMedia.dto.CreatorStatsDTO
 import com.course.CourseMedia.model.Course
 import com.course.CourseMedia.repository.CourseRepository
+import com.course.CourseMedia.repository.PurchaseRepository
 import com.course.CourseMedia.service.CourseService
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
+import java.time.LocalDateTime
+import kotlin.reflect.jvm.internal.impl.descriptors.Visibilities.Private
 
 private val logger = KotlinLogging.logger {}
 
 @Service
 class CourseServiceImpl(
     private val courseRepository: CourseRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val purchaseRepository: PurchaseRepository
 ) : CourseService {
 
     @Transactional
@@ -88,5 +94,25 @@ class CourseServiceImpl(
         courseRepository.delete(course)
         logger.info { "Course with ID $id deleted successfully by $creatorEmail" }
     }
+
+    override fun getCreatorStats(creatorEmail: String, startDate: LocalDateTime?, endDate: LocalDateTime?): CreatorStatsDTO {
+        logger.info { "Calculating statistics for creator: $creatorEmail" }
+
+
+
+        val purchases = purchaseRepository.findByCreatorEmailAndDateRange(creatorEmail, startDate, endDate)
+
+        return CreatorStatsDTO(
+            creatorEmail = creatorEmail,
+            totalCoursesSold = purchases.size,
+            totalRevenueEarned = purchases.sumOf { it.course.price }
+        )
+    }
+
+
+
+
+
+
 
 }
