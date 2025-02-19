@@ -5,9 +5,7 @@ import com.course.CourseMedia.advice.exceptions.CourseNotFoundException
 import com.course.CourseMedia.advice.exceptions.UnauthorizedAccessException
 import com.course.CourseMedia.auth.enum.Role
 import com.course.CourseMedia.auth.repository.UserRepository
-import com.course.CourseMedia.dto.CourseRequestDTO
-import com.course.CourseMedia.dto.CourseResponseDTO
-import com.course.CourseMedia.dto.CreatorStatsDTO
+import com.course.CourseMedia.dto.*
 import com.course.CourseMedia.model.Course
 import com.course.CourseMedia.repository.CourseRepository
 import com.course.CourseMedia.repository.PurchaseRepository
@@ -95,17 +93,25 @@ class CourseServiceImpl(
         logger.info { "Course with ID $id deleted successfully by $creatorEmail" }
     }
 
-    override fun getCreatorStats(creatorEmail: String, startDate: LocalDateTime?, endDate: LocalDateTime?): CreatorStatsDTO {
+
+    override fun getCreatorStats(creatorEmail: String, startDate: LocalDateTime?, endDate: LocalDateTime?): CreatorsStatsDTO {
         logger.info { "Calculating statistics for creator: $creatorEmail" }
-
-
 
         val purchases = purchaseRepository.findByCreatorEmailAndDateRange(creatorEmail, startDate, endDate)
 
-        return CreatorStatsDTO(
+        val coursePurchases = purchases.map { purchase ->
+            CoursePurchaseDTO(
+                courseTitle = purchase.course.title,
+                coursePrice = purchase.course.price,
+                customerEmail = purchase.customer.email
+            )
+        }
+
+        return CreatorsStatsDTO(
             creatorEmail = creatorEmail,
             totalCoursesSold = purchases.size,
-            totalRevenueEarned = purchases.sumOf { it.course.price }
+            totalRevenueEarned = purchases.sumOf { it.course.price },
+            coursePurchases = coursePurchases
         )
     }
 

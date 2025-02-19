@@ -3,6 +3,7 @@ package com.course.CourseMedia.controller
 import com.course.CourseMedia.dto.CourseRequestDTO
 import com.course.CourseMedia.dto.CourseResponseDTO
 import com.course.CourseMedia.dto.CreatorStatsDTO
+import com.course.CourseMedia.dto.CreatorsStatsDTO
 import com.course.CourseMedia.service.CourseService
 import mu.KotlinLogging
 import org.springframework.http.ResponseEntity
@@ -17,7 +18,7 @@ private val logger = KotlinLogging.logger {}
 
 
 @RestController
-@RequestMapping("/api/creator/course")
+@RequestMapping("/api/v1/creator/course")
 class CourseController(
     private val courseService: CourseService
 ) {
@@ -75,12 +76,12 @@ class CourseController(
         courseService.deleteCourse(id, creatorEmail)
         return ResponseEntity.ok("Course deleted successfully")
     }
-    @GetMapping("/status")
+    @PostMapping("/statics")
     fun getCreatorStats(
         @RequestParam(required = false) startDate: LocalDate?,
         @RequestParam(required = false) endDate: LocalDate?,
         @AuthenticationPrincipal userDetails: UserDetails
-    ): ResponseEntity<CreatorStatsDTO> {
+    ): ResponseEntity<CreatorsStatsDTO> {
         val creatorEmail = userDetails.username
         logger.info { "Fetching statistics for creator: $creatorEmail from $startDate to $endDate" }
         val startDateTime = startDate?.atStartOfDay()

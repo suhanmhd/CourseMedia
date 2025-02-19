@@ -1,5 +1,6 @@
 package com.course.CourseMedia.service.impl
 
+import com.course.CourseMedia.auth.enum.Role
 import com.course.CourseMedia.auth.repository.UserRepository
 import com.course.CourseMedia.dto.CreatorStatsDTO
 import com.course.CourseMedia.dto.CustomerStatsDTO
@@ -35,15 +36,31 @@ class AdminServiceImpl (
             UserResponseDTO(
                 id = user.id,
                 email = user.email,
-               name = user.name,
+                name = user.name,
                 role = user.role
             )
         }
-
         logger.info { "Successfully mapped ${users.size} users to DTOs" }
         return userDtos
     }
+    override fun getUsersByRole(role: Role): List<UserResponseDTO> {
+        logger.info { "Fetching users with role: $role" }
 
+        val users = userRepository.findByRole(role)
+
+        logger.info { "Fetched ${users.size} users with role: $role" }
+
+        val userDtos = users.map { user ->
+            UserResponseDTO(
+                id = user.id,
+                email = user.email,
+                name = user.name,
+                role = user.role
+            )
+        }
+        logger.info { "Successfully mapped ${users.size} users to DTOs" }
+        return userDtos
+    }
 
 
 
@@ -59,8 +76,7 @@ class AdminServiceImpl (
 
             var purchases = purchaseRepository.findPurchasesBetweenDates(startDate, endDate)
 
-            // ✅ Apply additional filtering to avoid data inconsistency
-            purchases = purchases.filter { purchase ->
+             purchases = purchases.filter { purchase ->
                 (startDate == null || !purchase.purchaseDate.isBefore(startDate)) &&
                         (endDate == null || !purchase.purchaseDate.isAfter(endDate))
             }
