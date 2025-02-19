@@ -1,5 +1,8 @@
 package  com.course.CourseMedia.auth.service
 
+import com.course.CourseMedia.Mapper.UserMapper
+import com.course.CourseMedia.advice.exceptions.AuthenticationException
+import com.course.CourseMedia.advice.exceptions.BadCredentialsException
 import com.course.CourseMedia.advice.exceptions.EmailAlreadyExistsException
 import com.course.CourseMedia.advice.exceptions.ResourceNotFoundException
 import com.course.CourseMedia.auth.dto.AuthRequest
@@ -10,6 +13,8 @@ import com.course.CourseMedia.auth.enum.Role
 import com.course.CourseMedia.auth.model.User
 import com.course.CourseMedia.auth.repository.UserRepository
 import com.course.CourseMedia.auth.security.JwtUtil
+import com.course.CourseMedia.dto.UserResponseDTO
+import mu.KotlinLogging
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 
@@ -23,15 +28,23 @@ class AuthService(
     private val jwtUtil: JwtUtil,
     private val authenticationManager: AuthenticationManager
 ) {
+    private val logger = KotlinLogging.logger {}
 
-    fun register(request: RegisterRequest): AuthResponse {
+
+
+
+    fun register(request: RegisterRequest): UserResponseDTO {
+        logger.info("Attempting to register user with email: ${request.email}")
+
         if (userRepository.findByEmail(request.email).isPresent) {
+            logger.warn("Registration failed: Email already taken - ${request.email}")
             throw EmailAlreadyExistsException("Email is already taken!")
         }
 
         val role = try {
-            Role.valueOf(request.role.toString()) // No need to call uppercase, as 'role' is already a valid enum name
-        } catch (e: ResourceNotFoundException) {
+            Role.valueOf(request.role.toString()) // Assuming request.role is a valid Role enum
+        } catch (e: IllegalArgumentException) {
+            logger.error("Invalid role provided: ${request.role}")
             throw ResourceNotFoundException("Invalid role: Must be ADMIN, CREATOR, or CUSTOMER")
         }
 
@@ -42,21 +55,26 @@ class AuthService(
             role = role
         )
 
-        userRepository.save(user)
+        val savedUser = userRepository.save(user)
+        logger.info("User registered successfully: ${savedUser.email}")
 
-        val accessToken = "dd"
-        val refreshToken ="dd"
-
-        return AuthResponse(accessToken, refreshToken)
+        return UserMapper.toDto(user)
     }
 
     fun authenticate(request: AuthRequest): AuthResponse {
-        authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(request.email, request.password)
-        )
-        val user = userRepository.findByEmail(request.email)
+        logger.info("Attempting Authenticate: ${request.email}")
+
+
+            authenticationManager.authenticate(
+                UsernamePasswordAuthenticationToken(
+                    request.email,
+                   request.password
+                )
+            )
+
+     val user = userRepository.findByEmail(request.email)
             .orElse(null)
-            ?: throw IllegalArgumentException("Invalid email or password")
+            ?: throw BadCredentialsException("Invalid email or password")
 
         return AuthResponse(
             accessToken = jwtUtil.generateAccessToken(user),

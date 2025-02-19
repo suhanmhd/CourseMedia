@@ -2,10 +2,7 @@ package com.course.CourseMedia.auth.dto
 
 
 import com.course.CourseMedia.auth.enum.Role
-import jakarta.validation.constraints.Email
-import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
-import jakarta.validation.constraints.Size
+import jakarta.validation.constraints.*
 
 
 data class RegisterRequest(
@@ -21,12 +18,12 @@ data class RegisterRequest(
     @field:Size(min = 6, message = "Password must be at least 6 characters")
     val password: String,
 
+    @field:NotBlank(message = "Role is required")
+    @field:Pattern(
+        regexp = "ADMIN|CREATOR|CUSTOMER",
+        message = "Invalid role: Must be ADMIN, CREATOR, or CUSTOMER"
+    )
+    val role: String
 
-    @field:NotNull(message = "Role is required")
-    val role: Role
 )
 
-//data class AuthResponse(
-//    val accessToken: String,
-//    val refreshToken: String
-//)

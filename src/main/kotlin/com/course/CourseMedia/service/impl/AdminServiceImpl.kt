@@ -11,6 +11,8 @@ import mu.KotlinLogging
 import org.apache.coyote.BadRequestException
 import org.springframework.stereotype.Service
 import java.time.LocalDate
+import java.time.LocalDateTime
+
 @Service
 class AdminServiceImpl (
     private val purchaseRepository: PurchaseRepository,
@@ -47,7 +49,7 @@ class AdminServiceImpl (
 
 
 
-    override fun getDetailedStats(startDate: LocalDate?, endDate: LocalDate?): StatsResponseDTO {
+    override fun getDetailedStats(startDate: LocalDateTime?, endDate: LocalDateTime?): StatsResponseDTO {
         try {
             logger.info { "Fetching detailed statistics for period: $startDate to $endDate" }
 
@@ -55,10 +57,16 @@ class AdminServiceImpl (
                 throw BadRequestException("Start date cannot be after end date.")
             }
 
-            val purchases = purchaseRepository.findPurchasesBetweenDates(startDate, endDate)
+            var purchases = purchaseRepository.findPurchasesBetweenDates(startDate, endDate)
+
+            // ✅ Apply additional filtering to avoid data inconsistency
+            purchases = purchases.filter { purchase ->
+                (startDate == null || !purchase.purchaseDate.isBefore(startDate)) &&
+                        (endDate == null || !purchase.purchaseDate.isAfter(endDate))
+            }
 
             // Calculate overall stats
-            val totalRevenue = purchases.sumOf { it.course.price }
+            val totalRevenue = purchases.sumOf { it.amount }
             val totalPurchases = purchases.size
 
             // Group by Creator
@@ -66,7 +74,7 @@ class AdminServiceImpl (
                 CreatorStatsDTO(
                     creatorEmail = creatorEmail,
                     totalCoursesSold = purchases.size,
-                    totalRevenueEarned = purchases.sumOf { it.course.price }
+                    totalRevenueEarned = purchases.sumOf { it.amount }
                 )
             }
 
@@ -75,7 +83,7 @@ class AdminServiceImpl (
                 CustomerStatsDTO(
                     customerEmail = customerEmail,
                     totalCoursesBought = purchases.size,
-                    totalAmountSpent = purchases.sumOf { it.course.price }
+                    totalAmountSpent = purchases.sumOf { it.amount }
                 )
             }
 
@@ -94,6 +102,7 @@ class AdminServiceImpl (
             throw RuntimeException("Failed to fetch purchase statistics", e)
         }
     }
+
 
 
 }

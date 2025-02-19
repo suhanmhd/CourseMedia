@@ -65,7 +65,7 @@ import org.springframework.stereotype.Service
             throw ConflictException("You have already purchased this course.")
         }
 
-        val purchase = purchaseRepository.save(Purchase(customer = customer, course = course))
+        val purchase = purchaseRepository.save(Purchase(customer = customer, course = course, amount = course.price))
         logger.info { "User ${customer.email} purchased course ${course.title}" }
 
         return purchase.toDTO()
@@ -92,6 +92,7 @@ import org.springframework.stereotype.Service
         return PurchaseResponseDTO(
             id = id,
             courseId = course.id,
+            amount = amount,
             courseTitle = course.title,
             purchaseDate = purchaseDate,
             status = status

@@ -12,13 +12,13 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("api/v1/customer")
+@RequestMapping("api/v1/customer/course")
 class CustomerController(
     private val customerService: CustomerService
 ) {
     private val logger = KotlinLogging.logger {}
 
-    @GetMapping("/courses")
+    @GetMapping()
     fun getAllCourses(
         @RequestParam(required = false) search: String?
     ): ResponseEntity<List<CourseResponseDTO>> {
@@ -28,7 +28,7 @@ class CustomerController(
         return ResponseEntity.ok(courses)
     }
 
-    @PostMapping("/courses/purchase/{courseId}")
+    @PostMapping("/purchase/{courseId}")
     fun buyCourse(
         @PathVariable courseId: Long,
         @AuthenticationPrincipal userDetails: UserDetails
@@ -42,7 +42,7 @@ class CustomerController(
 
 
 
-    @GetMapping("courses/my-courses")
+    @GetMapping("/my-courses")
     fun getUserPurchases(
         @AuthenticationPrincipal userDetails: UserDetails
     ): ResponseEntity<List<PurchaseResponseDTO>> {

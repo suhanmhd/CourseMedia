@@ -5,6 +5,7 @@ import com.course.CourseMedia.auth.dto.AuthResponse
 import com.course.CourseMedia.auth.dto.RefreshTokenRequest
 import com.course.CourseMedia.auth.dto.RegisterRequest
 import com.course.CourseMedia.auth.service.AuthService
+import com.course.CourseMedia.dto.UserResponseDTO
 
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*
 class AuthController(private val authService: AuthService) {
 
     @PostMapping("/register")
-    fun register(@Valid @RequestBody request: RegisterRequest): ResponseEntity<AuthResponse> {
+    fun register(@Valid @RequestBody request: RegisterRequest): ResponseEntity<UserResponseDTO> {
 
         return ResponseEntity.ok(authService.register(request))
     }

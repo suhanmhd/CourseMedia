@@ -2,6 +2,7 @@ package com.course.CourseMedia.model
 
 import com.course.CourseMedia.auth.model.User
 import jakarta.persistence.*
+import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.*
 //
@@ -48,6 +49,9 @@ data class Purchase(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
     val course: Course,
+
+    @Column(nullable = false)
+    val amount: BigDecimal,
 
     @Column(nullable = false)
     val purchaseDate: LocalDateTime = LocalDateTime.now(),

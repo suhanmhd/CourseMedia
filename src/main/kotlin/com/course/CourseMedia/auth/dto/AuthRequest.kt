@@ -11,9 +11,7 @@ data class AuthRequest(
     val email: String,
 
 
-//    @field:NotBlank(message = "Name cannot be empty")
-//
-//    val name: String,
+
 
     @field:NotBlank(message = "Password cannot be empty")
     @field:Size(min = 6, message = "Password must be at least 6 characters")

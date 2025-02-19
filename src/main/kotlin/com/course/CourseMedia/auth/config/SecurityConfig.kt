@@ -88,8 +88,11 @@ class SecurityConfig(
                    ).permitAll()
 
 
-                  .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                  .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                    .requestMatchers("/api/creator/**").hasRole("CREATOR")
+                    .requestMatchers("/api/v1/customer/**").hasRole("CUSTOMER")
                     .anyRequest().authenticated()
+
             }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
           .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
