@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://mysql-17f0b469-suhanmuhammed4-ea38.h.aivencloud.com:15753/SampleAppsedu?createDatabaseIfNotExist=true
+    url: jdbc:mysql://mysql-17f0b469-suhanmuhammed4-ea38.h.aivencloud.com:15753/course-media?createDatabaseIfNotExist=true
 
 
     username: ${DB_USERNAME}

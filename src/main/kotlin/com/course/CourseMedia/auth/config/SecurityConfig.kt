@@ -74,7 +74,7 @@ class SecurityConfig(
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it.requestMatchers(
-                    "/api/auth/**",
+                    "/api/v1/auth/**",
                    "/auth/github/**",
                                 "/v3/api-docs/**",
                                 "/v3/api-docs",
